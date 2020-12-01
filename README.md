@@ -51,4 +51,4 @@ For a .docx file, do the same as above but for a .docx, like --> ```hammer -t te
 If you need any support, please open an issue!
 
 
-
+Credit to JohnTheRipper(https://www.openwall.com/john/) for the file2hash convert :) 
