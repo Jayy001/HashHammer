@@ -28,10 +28,15 @@ Thats it!
 
 For a basic hash just run --> ```hammer -t (hash)``` use ```-e``` if you want to see errors and what failed cracking the hash (Will take longer)
 
+![Normal Hash](https://i.ibb.co/jvppYVn/Normal-Hash.png)
+
 If you want to crack the hash with hashcat if all other methods fail then run --> ```hammer -t (hash) -w (wordlist location)```
+
+![Hashcat](https://i.ibb.co/yVgsSLV/Hashcat.png)
 
 If you want to save the output append --> ```-o (outputfilename.txt)``` to the end, also you dont need to create the file, python will do this for you.
 
+![Output](https://i.ibb.co/QncgDm3/output.png)
 
 # Other Features
 
