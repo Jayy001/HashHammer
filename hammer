@@ -480,10 +480,11 @@ def hammer_hashes():
     banner()
 
     # Give a nice little print statement :)
+        
     try:
-    	get_width(args.hash)
+        get_width(args.hash)
     except:
-	get_width("❌ Please supply a hash with '-t hash'!") ; print(colored("❌ Please supply a hash with '-t hash'!", "red",attrs=['bold'])) ; exit()		  
+        get_width("❌ Please supply a hash with '-t hash'!") ; print(colored("❌ Please supply a hash with '-t hash'!", "red",attrs=['bold'])) ; exit()         
     print(colored(f"{args.hash}", "white", attrs=["bold"]), end="\n\n")
 
     # Grab the hashes
