@@ -35,6 +35,7 @@ def get_width(length):
     if not spaces_num < 0:
         print(" " * spaces_num, end="")
 
+
 # Hashes.org
 
 
@@ -59,8 +60,7 @@ def HashesOrg(hashed):
         if args.e:
             get_width("[❌] Failed to connect to hashs.org")
             print(
-                colored("[❌] Failed to connect to hashs.org",
-                        "red", attrs="bold"),
+                colored("[❌] Failed to connect to hashs.org", "red", attrs="bold"),
                 end="\n",
             )
         return False
@@ -71,8 +71,7 @@ def HashesOrg(hashed):
         if args.e:
             get_width("[❌] Hashs.org | Hash not found")
             print(
-                colored("[❌] Hashs.org | Hash not found",
-                        "red", attrs=["bold"]),
+                colored("[❌] Hashs.org | Hash not found", "red", attrs=["bold"]),
                 end="\n",
             )
         return False
@@ -92,8 +91,9 @@ def HashesOrg(hashed):
     # Check for Hex
 
     if "$HEX[" in final_output:
-    	final_output = bytearray.fromhex(
-    	    final_output[5:len(final_output)-1]).decode()
+        final_output = bytearray.fromhex(
+            final_output[5 : len(final_output) - 1]
+        ).decode()
 
     get_width(f"[✅] Hashs.org | Plain Found : {final_output}")
     print(
@@ -104,287 +104,356 @@ def HashesOrg(hashed):
     )
 
     if args.output:
-    	with open(args.output,"a+") as results:
-    		results.write(f"{hashed}:{final_output}\n")
-    		results.close()
+        with open(args.output, "a+") as results:
+            results.write(f"{hashed}:{final_output}\n")
+            results.close()
 
     return True
 
 
 # Hashtoolkit
 
+
 def HashToolKit(hash):
 
-	# Print
+    # Print
 
-	get_width("[⏳] Trying HashToolKit")
-	print(colored("[⏳] Trying HashToolKit",
-		  "yellow", attrs=["bold"]), end="\r")
+    get_width("[⏳] Trying HashToolKit")
+    print(colored("[⏳] Trying HashToolKit", "yellow", attrs=["bold"]), end="\r")
 
-	# Grab HTML
+    # Grab HTML
 
-	try:
-		Scraper = cloudscraper.create_scraper()
-		HTML = Scraper.get(
-			f"https://hashtoolkit.com/decrypt-hash/?hash={hash}", timeout=5
-		).text.splitlines()
-	except:
-		if args.e:
-			get_width()
-			print(
-				colored("[❌] Failed to connect to HashToolKit",
-						"red", attrs="bold"),
-				end="\n",
-			)
-		return False
+    try:
+        Scraper = cloudscraper.create_scraper()
+        HTML = Scraper.get(
+            f"https://hashtoolkit.com/decrypt-hash/?hash={hash}", timeout=5
+        ).text.splitlines()
+    except:
+        if args.e:
+            get_width()
+            print(
+                colored("[❌] Failed to connect to HashToolKit", "red", attrs="bold"),
+                end="\n",
+            )
+        return False
 
-	# Extract Password
+    # Extract Password
 
-	for i in range(len(HTML)):
-		if "/generate-hash/?text=" in HTML[i]:
+    for i in range(len(HTML)):
+        if "/generate-hash/?text=" in HTML[i]:
 
-			# Parition Password
+            # Parition Password
 
-			output = HTML[i].partition("?text=")[2].split('">')[0]
+            output = HTML[i].partition("?text=")[2].split('">')[0]
 
-			# Check for false positive
+            # Check for false positive
 
-			if "</a></span>" in output or 'title="' in output:
-				if args.e:
-					get_width("[❌] HashToolKit | Hash not found")
-					print(
-						colored(
-							"[❌] HashToolKit | Hash not found", "red", attrs=["bold"]
-						),
-						end="\n",
-					)
-				return False
-			else:
-				get_width(f"[✅] HashToolKit | Plain found : {output}")
-				print(
-					colored(
-						f"[✅] HashToolKit | Plain found : {output}",
-						"green",
-						attrs=["bold"],
-					),
-					end="\n",
-				)
-				if args.output:
-					with open(args.output,"a+") as results:
-						results.write(f"{hash}:{output}\n")
-						results.close()
-				return True
+            if "</a></span>" in output or 'title="' in output:
+                if args.e:
+                    get_width("[❌] HashToolKit | Hash not found")
+                    print(
+                        colored(
+                            "[❌] HashToolKit | Hash not found", "red", attrs=["bold"]
+                        ),
+                        end="\n",
+                    )
+                return False
+            else:
+                get_width(f"[✅] HashToolKit | Plain found : {output}")
+                print(
+                    colored(
+                        f"[✅] HashToolKit | Plain found : {output}",
+                        "green",
+                        attrs=["bold"],
+                    ),
+                    end="\n",
+                )
+                if args.output:
+                    with open(args.output, "a+") as results:
+                        results.write(f"{hash}:{output}\n")
+                        results.close()
+                return True
 
-	if args.e:
-		get_width("[❌] HashToolKit | Hash not found")
-		print(
-			colored("[❌] HashToolKit | Hash not found", "red", attrs=["bold"]), end="\n"
-		)
-	
-	return False
+    if args.e:
+        get_width("[❌] HashToolKit | Hash not found")
+        print(
+            colored("[❌] HashToolKit | Hash not found", "red", attrs=["bold"]), end="\n"
+        )
 
-	# Hash not found
+    return False
+
+    # Hash not found
+
 
 # Hashcat
 
+
 def hash_cat(hash):
 
-	# Grab varibles...
+    # Grab varibles...
 
-	types,user_types = identify_hash(hash, "Hashcat")
-	extra_parameters = ""
+    types, user_types = identify_hash(hash, "Hashcat")
+    extra_parameters = ""
 
-	if args.wordlist:
-		wordlist = args.wordlist
-	else:
-		print("\n") ; get_width("[❌] Hashcat | No wordlist given!") ; print(colored("[❌] Hashcat | No wordlist given!", "red", attrs=['bold']))
-		return False
+    if args.wordlist:
+        wordlist = args.wordlist
+    else:
+        print("\n")
+        get_width("[❌] Hashcat | No wordlist given!")
+        print(colored("[❌] Hashcat | No wordlist given!", "red", attrs=["bold"]))
+        return False
 
-	# Firstly, lets check for un-supported hash types
+    # Firstly, lets check for un-supported hash types
 
-	# Office
+    # Office
 
-	if "office" in hash:
-		types.append("9400") 
-		user_types.append("Office 2007")
-			
-		# RAR 
+    if "office" in hash:
+        types.append("9400")
+        user_types.append("Office 2007")
 
-	elif "\$rar5" in hash:
-		types.append("13000")
-		user_types.append("RAR")
+        # RAR
 
-	# Check for invalid hash...
+    elif "\$rar5" in hash:
+        types.append("13000")
+        user_types.append("RAR")
 
-	if len(types) == 0:
-		if args.e:
-			get_width(f"[❌] Hashcat | Invalid Hash")
-			print(colored(f"[❌] Hashcat | Invalid Hash", "red", attrs=["bold"]), end="\n") 
-			return False
-		else:
-			return False
+    # Check for invalid hash...
 
-	# Hammer that hash!!!!
+    if len(types) == 0:
+        if args.e:
+            get_width(f"[❌] Hashcat | Invalid Hash")
+            print(
+                colored(f"[❌] Hashcat | Invalid Hash", "red", attrs=["bold"]), end="\n"
+            )
+            return False
+        else:
+            return False
 
-	for i in range(len(types)):
+    # Hammer that hash!!!!
 
-		# For prettier output
+    for i in range(len(types)):
 
-		if i == 0:
-			print("\n",end="")
+        # For prettier output
 
-		# Try crack hash
+        if i == 0:
+            print("\n", end="")
 
-		try:
-				sp.check_call(f"hashcat -a 0 -m {types[i]} {hash} {wordlist}", shell="True",stdout=sp.DEVNULL,stderr=sp.STDOUT)
-		except sp.CalledProcessError:
-				if args.e:
-					get_width(f"[❌] Hashcat hash type invalid '{user_types[i]}'")
-					print(colored(f"[❌] Hashcat hash type invalid '{user_types[i]}'", "red", attrs=["bold"]), end="\n")
-					continue
-		except OSError:
-				get_width(f"[❌] Hashcat not found on system")
-				print(colored(f"[❌] Hashcat not found on system","red", attrs=["bold"]), end="\n")
-				return False
+        # Try crack hash
 
-		# Check if hash was cracked
+        try:
+            sp.check_call(
+                f"hashcat -a 0 -m {types[i]} {hash} {wordlist}",
+                shell="True",
+                stdout=sp.DEVNULL,
+                stderr=sp.STDOUT,
+            )
+        except sp.CalledProcessError:
+            if args.e:
+                get_width(f"[❌] Hashcat hash type invalid '{user_types[i]}'")
+                print(
+                    colored(
+                        f"[❌] Hashcat hash type invalid '{user_types[i]}'",
+                        "red",
+                        attrs=["bold"],
+                    ),
+                    end="\n",
+                )
+                continue
+        except OSError:
+            get_width(f"[❌] Hashcat not found on system")
+            print(
+                colored(f"[❌] Hashcat not found on system", "red", attrs=["bold"]),
+                end="\n",
+            )
+            return False
 
-		possible_output = str(sp.check_output(f"hashcat -a 0 -m {types[i]} {hash} {wordlist} --show", shell="True").strip()).replace("'","")
+        # Check if hash was cracked
 
-		if not "No hashes loaded." in possible_output:
-			get_width(f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}")
-			print(colored(f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}", "green", attrs=['bold']), end="")
-			if args.output:
-				with open(args.output,"a+") as results:
-					results.write(f"{hash}:{possible_output.split(':')[1]}\n")
-					results.close()
-			return True
-		pass
+        possible_output = str(
+            sp.check_output(
+                f"hashcat -a 0 -m {types[i]} {hash} {wordlist} --show", shell="True"
+            ).strip()
+        ).replace("'", "")
 
-		# Go for another try
-		
+        if not "No hashes loaded." in possible_output:
+            get_width(
+                f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}"
+            )
+            print(
+                colored(
+                    f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}",
+                    "green",
+                    attrs=["bold"],
+                ),
+                end="",
+            )
+            if args.output:
+                with open(args.output, "a+") as results:
+                    results.write(f"{hash}:{possible_output.split(':')[1]}\n")
+                    results.close()
+            return True
+        pass
+
+        # Go for another try
+
+
 # Grab Hashs
+
 
 def grab_hash():
 
-	# Check for input
+    # Check for input
 
-	if not args.hash:
-		get_width(
-			"❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
-		)
-		print(
-			"❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
-		)
-		quit()
+    if not args.hash:
+        get_width(
+            "❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
+        )
+        print(
+            "❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
+        )
+        quit()
 
-	# Get type {file hash}
+    # Get type {file hash}
 
-	# .txt
+    # .txt
 
-	if ".txt" in args.hash:
-		try:
-			hashs = open(args.hash).read().splitlines()
-		except BaseException:
-			print("\n")
-			get_width("❌ Was not able to read contents from file.")
-			print("❌ Was not able to read contents from file.") 
-			exit()
-		if hashs == []:
-			print("\n")
-			get_width("❌ No hashes in file!")
-			print("❌ No hashes in file!")
-			exit()
+    if ".txt" in args.hash:
+        try:
+            hashs = open(args.hash).read().splitlines()
+        except BaseException:
+            print("\n")
+            get_width("❌ Was not able to read contents from file.")
+            print("❌ Was not able to read contents from file.")
+            exit()
+        if hashs == []:
+            print("\n")
+            get_width("❌ No hashes in file!")
+            print("❌ No hashes in file!")
+            exit()
 
-	# Office
+    # Office
 
-	if ".docx" in args.hash:
-		try:
-			output = sp.check_output(f"python3 /usr/local/bin/2John/Office2John.py {args.hash}", shell="True",universal_newlines=True).split(":")[1]
-		except sp.CalledProcessError:
-			get_width("❌ This file is either not suppored, or doesnt exists.")
-			print(colored("❌ This file is either not suppored, or doesnt exists","red",attrs=['bold']))
-			exit()
-		except OSError:
-			get_width("❌ Office2John Not on system")
-			print(colored("❌ Office2John Not on system","red",attrs=['bold']))
-			exit()
+    if ".docx" in args.hash:
+        try:
+            output = sp.check_output(
+                f"python3 /usr/local/bin/2John/Office2John.py {args.hash}",
+                shell="True",
+                universal_newlines=True,
+            ).split(":")[1]
+        except sp.CalledProcessError:
+            get_width("❌ This file is either not suppored, or doesnt exists.")
+            print(
+                colored(
+                    "❌ This file is either not suppored, or doesnt exists",
+                    "red",
+                    attrs=["bold"],
+                )
+            )
+            exit()
+        except OSError:
+            get_width("❌ Office2John Not on system")
+            print(colored("❌ Office2John Not on system", "red", attrs=["bold"]))
+            exit()
 
-		# Format hash
+        # Format hash
 
-		final_output = []
+        final_output = []
 
-		for i in range(len(output)):
-			if output[i] == "$":
-				final_output.append("\\") ; final_output.append(output[i])
-			else:
-				final_output.append(output[i])
+        for i in range(len(output)):
+            if output[i] == "$":
+                final_output.append("\\")
+                final_output.append(output[i])
+            else:
+                final_output.append(output[i])
 
-		final_output = f'\"{"".join(final_output)}\"' ; return ''.join(final_output.split()[0] + '"').split()
+        final_output = f'"{"".join(final_output)}"'
+        return "".join(final_output.split()[0] + '"').split()
 
-	# RAR 
+    # RAR
 
-	if ".rar" in args.hash:
-		try:
-			output = sp.check_output(f"/usr/local/bin/2John/rar2john {args.hash}", shell="True",universal_newlines=True).split(":")[1]
-		except sp.CalledProcessError:
-			get_width("❌ This file is either not suppored, or doesnt exists.")
-			print(colored("❌ This file is either not suppored, or doesnt exists","red",attrs=['bold']))
-			exit()
-		except OSError:
-			get_width("❌ rar2John Not on system")
-			print(colored("❌ rar2John Not on system","red",attrs=['bold']))
-			exit()
+    if ".rar" in args.hash:
+        try:
+            output = sp.check_output(
+                f"/usr/local/bin/2John/rar2john {args.hash}",
+                shell="True",
+                universal_newlines=True,
+            ).split(":")[1]
+        except sp.CalledProcessError:
+            get_width("❌ This file is either not suppored, or doesnt exists.")
+            print(
+                colored(
+                    "❌ This file is either not suppored, or doesnt exists",
+                    "red",
+                    attrs=["bold"],
+                )
+            )
+            exit()
+        except OSError:
+            get_width("❌ rar2John Not on system")
+            print(colored("❌ rar2John Not on system", "red", attrs=["bold"]))
+            exit()
 
-		# Format hash
+        # Format hash
 
-		final_output = []
+        final_output = []
 
-		for i in range(len(output)):
-			if output[i] == "$":
-				final_output.append("\\") ; final_output.append(output[i])
-			else:
-				final_output.append(output[i])
+        for i in range(len(output)):
+            if output[i] == "$":
+                final_output.append("\\")
+                final_output.append(output[i])
+            else:
+                final_output.append(output[i])
 
-		final_output = f'\"{"".join(final_output)}\"' ; return ''.join(final_output.split()[0] + '"').split()
+        final_output = f'"{"".join(final_output)}"'
+        return "".join(final_output.split()[0] + '"').split()
 
-	return args.hash.split()
+    return args.hash.split()
+
 
 # Hash Identifyer
 
-def identify_hash(hash,choice):
 
-	output = sp.getoutput(f"hashid -m {hash}").split("\n")
-	output_hashcat = []
-	output_type = []
+def identify_hash(hash, choice):
 
-	for i in range(len(output)):
-		if "Hashcat Mode" in output[i]:
-			type_temp = []
-			for b in range(1,len(output[i].split())):
-				if output[i].split()[b] != "[Hashcat":
-					type_temp.append(output[i].split()[b])
-				else:
-					output_type.append("".join(type_temp)) ; break
-			current_setntence = [char for char in re.sub(r'[^\w]', '', output[i])] ; temp = []
-			for a in list(reversed(range(len(current_setntence)))):
-				if current_setntence[a].isdigit():
-					temp.append(current_setntence[a])
-				else:
-					if len(temp) > 0:
-						break
-			output_hashcat.append("".join(list(reversed(temp))))
-	
-	if choice == "type":
-		if len(output_type) == 0:
-			if args.e:
-				get_width("[❌] HashIdentify | Type not found") ; print(colored("[❌] HashIdentify | Type not found", "red", attrs=['bold']))
-			return False	
-		get_width("[✅] Possible Hash Types ;") ; print(colored("[✅] Possible Hash Types ; \n", "green", attrs=['bold']))
-		for i in range(len(output_type)):
-			get_width(output_type[i]) ; print(colored(output_type[i], "magenta", attrs=['bold']))
-	else:
-		return output_hashcat, output_type
+    output = sp.getoutput(f"hashid -m {hash}").split("\n")
+    output_hashcat = []
+    output_type = []
+
+    for i in range(len(output)):
+        if "Hashcat Mode" in output[i]:
+            type_temp = []
+            for b in range(1, len(output[i].split())):
+                if output[i].split()[b] != "[Hashcat":
+                    type_temp.append(output[i].split()[b])
+                else:
+                    output_type.append("".join(type_temp))
+                    break
+            current_setntence = [char for char in re.sub(r"[^\w]", "", output[i])]
+            temp = []
+            for a in list(reversed(range(len(current_setntence)))):
+                if current_setntence[a].isdigit():
+                    temp.append(current_setntence[a])
+                else:
+                    if len(temp) > 0:
+                        break
+            output_hashcat.append("".join(list(reversed(temp))))
+
+    if choice == "type":
+        if len(output_type) == 0:
+            if args.e:
+                get_width("[❌] HashIdentify | Type not found")
+                print(
+                    colored("[❌] HashIdentify | Type not found", "red", attrs=["bold"])
+                )
+            return False
+        get_width("[✅] Possible Hash Types ;")
+        print(colored("[✅] Possible Hash Types ; \n", "green", attrs=["bold"]))
+        for i in range(len(output_type)):
+            get_width(output_type[i])
+            print(colored(output_type[i], "magenta", attrs=["bold"]))
+    else:
+        return output_hashcat, output_type
+
 
 def banner():
     print(
@@ -403,58 +472,65 @@ def banner():
         )
     )
 
+
 def hammer_hashes():
 
-	# Print Banner
+    # Print Banner
 
-	banner()
+    banner()
 
-	# Give a nice little print statement :)
+    # Give a nice little print statement :)
 
-	get_width(args.hash)
-	print(colored(f"{args.hash}", "white", attrs=["bold"]), end="\n\n")
+    get_width(args.hash)
+    print(colored(f"{args.hash}", "white", attrs=["bold"]), end="\n\n")
 
-	# Grab the hashes
+    # Grab the hashes
 
-	hashes = grab_hash()
+    hashes = grab_hash()
 
-	# For Loop
+    # For Loop
 
-	for i in range(len(hashes)):
+    for i in range(len(hashes)):
 
-		# Format New line
+        # Format New line
 
-		# Get current Hash
+        # Get current Hash
 
-		current_hash = hashes[i] ; print("",end="\n")
+        current_hash = hashes[i]
+        print("", end="\n")
 
-		# Print Hash
+        # Print Hash
 
-		if len(hashes) > 1:
-			get_width(hashes[i])
-			print(colored(f"{hashes[i]}", "white", attrs=["bold"]), end="\n")
+        if len(hashes) > 1:
+            get_width(hashes[i])
+            print(colored(f"{hashes[i]}", "white", attrs=["bold"]), end="\n")
 
-		# Online Cracking
-		if HashToolKit(current_hash) == True and not args.e:
-			continue
-		if HashesOrg(current_hash) == True and not args.e:
-			continue
-		
-		# Offline Cracking
+        # Online Cracking
+        if HashToolKit(current_hash) == True and not args.e:
+            continue
+        if HashesOrg(current_hash) == True and not args.e:
+            continue
 
+        # Offline Cracking
 
-		identify_hash(hashes[i],"type")
-		
-		if hash_cat(hashes[i]) == True and not args.e:
-			continue
+        identify_hash(hashes[i], "type")
 
-		# Remove all clearence
+        if hash_cat(hashes[i]) == True and not args.e:
+            continue
 
-		print(" " * 100, end="") 
+        # Remove all clearence
+
+        print(" " * 100, end="")
+
 
 hammer_hashes()
 
 # End
 
-print("\n") ; get_width(f"Time taken : {datetime.datetime.now() - begin_time}") ; print(colored(f"Time taken : {datetime.datetime.now() - begin_time}","blue",attrs=['bold']))
-
+print("\n")
+get_width(f"Time taken : {datetime.datetime.now() - begin_time}")
+print(
+    colored(
+        f"Time taken : {datetime.datetime.now() - begin_time}", "blue", attrs=["bold"]
+    )
+)
