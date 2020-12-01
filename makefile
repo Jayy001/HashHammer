@@ -9,4 +9,4 @@ install:
 uninstall:
 	@sudo rm -f $(DESTDIR)/hammer
 	@sudo rm -rf $(DESTDIR)/2John
-	@echo "Hash-Buster has been removed"
+	@echo "HashHammer was removed"
