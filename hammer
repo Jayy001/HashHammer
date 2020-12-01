@@ -48,7 +48,7 @@ def HashesOrg(hashed):
 
     # Credentials - ENTER YOUR API KEY HERE!
 
-    key = ""
+    key = "iSQB3JUQ8UW3wXXbmirHNQV2AMgC2V"
 
     # GET Request
 
@@ -299,117 +299,114 @@ def hash_cat(hash):
 
 # Grab Hashs
 
-
 def grab_hash():
 
-    # Check for input
+	# Check for input
 
-    if not args.hash:
-        get_width(
-            "❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
-        )
-        print(
-            "❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
-        )
-        quit()
+	if not args.hash:
+		get_width(
+			"❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
+		)
+		print(
+			"❌ Error | Please provide hash(s) with '-t ('hash' or 'hash,hash,hash' or 'hashes.txt')'"
+		)
+		quit()
 
-    # Get type {file hash}
+	# Get type {file hash}
 
-    # .txt
+	# .txt
 
-    if ".txt" in args.hash:
-        try:
-            hashs = open(args.hash).read().splitlines()
-        except BaseException:
-            print("\n")
-            get_width("❌ Was not able to read contents from file.")
-            print("❌ Was not able to read contents from file.")
-            exit()
-        if hashs == []:
-            print("\n")
-            get_width("❌ No hashes in file!")
-            print("❌ No hashes in file!")
-            exit()
+	if ".txt" in args.hash:
+		try:
+			return(open(args.hash).read().splitlines())
+		except BaseException:
+			print("\n")
+			get_width("❌ Was not able to read contents from file.")
+			print("❌ Was not able to read contents from file.")
+			exit()
+		if hashs == []:
+			print("\n")
+			get_width("❌ No hashes in file!")
+			print("❌ No hashes in file!")
+			exit()
 
-    # Office
+	# Office
 
-    if ".docx" in args.hash:
-        try:
-            output = sp.check_output(
-                f"python3 /usr/local/bin/2John/Office2John.py {args.hash}",
-                shell="True",
-                universal_newlines=True,
-            ).split(":")[1]
-        except sp.CalledProcessError:
-            get_width("❌ This file is either not suppored, or doesnt exists.")
-            print(
-                colored(
-                    "❌ This file is either not suppored, or doesnt exists",
-                    "red",
-                    attrs=["bold"],
-                )
-            )
-            exit()
-        except OSError:
-            get_width("❌ Office2John Not on system")
-            print(colored("❌ Office2John Not on system", "red", attrs=["bold"]))
-            exit()
+	if ".docx" in args.hash:
+		try:
+			output = sp.check_output(
+				f"python3 /usr/local/bin/2John/Office2John.py {args.hash}",
+				shell="True",
+				universal_newlines=True,
+			).split(":")[1]
+		except sp.CalledProcessError:
+			get_width("❌ This file is either not suppored, or doesnt exists.")
+			print(
+				colored(
+					"❌ This file is either not suppored, or doesnt exists",
+					"red",
+					attrs=["bold"],
+				)
+			)
+			exit()
+		except OSError:
+			get_width("❌ Office2John Not on system")
+			print(colored("❌ Office2John Not on system", "red", attrs=["bold"]))
+			exit()
 
-        # Format hash
+		# Format hash
 
-        final_output = []
+		final_output = []
 
-        for i in range(len(output)):
-            if output[i] == "$":
-                final_output.append("\\")
-                final_output.append(output[i])
-            else:
-                final_output.append(output[i])
+		for i in range(len(output)):
+			if output[i] == "$":
+				final_output.append("\\")
+				final_output.append(output[i])
+			else:
+				final_output.append(output[i])
 
-        final_output = f'"{"".join(final_output)}"'
-        return "".join(final_output.split()[0] + '"').split()
+		final_output = f'"{"".join(final_output)}"'
+		return "".join(final_output.split()[0] + '"').split()
 
-    # RAR
+	# RAR
 
-    if ".rar" in args.hash:
-        try:
-            output = sp.check_output(
-                f"/usr/local/bin/2John/rar2john {args.hash}",
-                shell="True",
-                universal_newlines=True,
-            ).split(":")[1]
-        except sp.CalledProcessError:
-            get_width("❌ This file is either not suppored, or doesnt exists.")
-            print(
-                colored(
-                    "❌ This file is either not suppored, or doesnt exists",
-                    "red",
-                    attrs=["bold"],
-                )
-            )
-            exit()
-        except OSError:
-            get_width("❌ rar2John Not on system")
-            print(colored("❌ rar2John Not on system", "red", attrs=["bold"]))
-            exit()
+	if ".rar" in args.hash:
+		try:
+			output = sp.check_output(
+				f"/usr/local/bin/2John/rar2john {args.hash}",
+				shell="True",
+				universal_newlines=True,
+			).split(":")[1]
+		except sp.CalledProcessError:
+			get_width("❌ This file is either not suppored, or doesnt exists.")
+			print(
+				colored(
+					"❌ This file is either not suppored, or doesnt exists",
+					"red",
+					attrs=["bold"],
+				)
+			)
+			exit()
+		except OSError:
+			get_width("❌ rar2John Not on system")
+			print(colored("❌ rar2John Not on system", "red", attrs=["bold"]))
+			exit()
 
-        # Format hash
+		# Format hash
 
-        final_output = []
+		final_output = []
 
-        for i in range(len(output)):
-            if output[i] == "$":
-                final_output.append("\\")
-                final_output.append(output[i])
-            else:
-                final_output.append(output[i])
+		for i in range(len(output)):
+			if output[i] == "$":
+				final_output.append("\\")
+				final_output.append(output[i])
+			else:
+				final_output.append(output[i])
 
-        final_output = f'"{"".join(final_output)}"'
-        return "".join(final_output.split()[0] + '"').split()
+		final_output = f'"{"".join(final_output)}"'
+		return "".join(final_output.split()[0] + '"').split()
 
-    return args.hash.split()
-
-
+	return args.hash.split()
 # Hash Identifyer
 
 
