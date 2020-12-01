@@ -48,7 +48,7 @@ def HashesOrg(hashed):
 
     # Credentials - ENTER YOUR API KEY HERE!
 
-    key = ""
+    key = "iSQB3JUQ8UW3wXXbmirHNQV2AMgC2V"
 
     # GET Request
 
@@ -187,115 +187,125 @@ def HashToolKit(hash):
 
 # Hashcat
 
-
 def hash_cat(hash):
 
-    # Grab varibles...
+	# Grab varibles...
 
-    types, user_types = identify_hash(hash, "Hashcat")
-    extra_parameters = ""
+	types, user_types = identify_hash(hash, "Hashcat")
+	extra_parameters = ""
 
-    if args.wordlist:
-        wordlist = args.wordlist
-    else:
-        print("\n")
-        get_width("[❌] Hashcat | No wordlist given!")
-        print(colored("[❌] Hashcat | No wordlist given!", "red", attrs=["bold"]))
-        return False
+	if args.wordlist:
+		wordlist = args.wordlist
+	else:
+		print("\n")
+		get_width("[❌] Hashcat | No wordlist given!")
+		print(colored("[❌] Hashcat | No wordlist given!", "red", attrs=["bold"]))
+		return False
 
-    # Firstly, lets check for un-supported hash types
+	# Firstly, lets check for un-supported hash types
 
-    # Office
+	# Office
 
-    if "office" in hash:
-        types.append("9400")
-        user_types.append("Office 2007")
+	if "office" in hash:
+		types.append("9400")
+		user_types.append("Office 2007")
 
-        # RAR
+		# RAR
 
-    elif "\$rar5" in hash:
-        types.append("13000")
-        user_types.append("RAR")
+	elif "\$rar5" in hash:
+		types.append("13000")
+		user_types.append("RAR")
 
-    # Check for invalid hash...
+	# Check for invalid hash...
 
-    if len(types) == 0:
-        if args.e:
-            get_width(f"[❌] Hashcat | Invalid Hash")
-            print(
-                colored(f"[❌] Hashcat | Invalid Hash", "red", attrs=["bold"]), end="\n"
-            )
-            return False
-        else:
-            return False
+	if len(types) == 0:
+		if args.e:
+			get_width(f"[❌] Hashcat | Invalid Hash")
+			print(
+				colored(f"[❌] Hashcat | Invalid Hash", "red", attrs=["bold"]), end="\n"
+			)
+			return False
+		else:
+			return False
 
-    # Hammer that hash!!!!
+	# Hammer that hash!!!!
 
-    for i in range(len(types)):
+	for i in range(len(types)):
 
-        # For prettier output
+		# For prettier output
 
-        if i == 0:
-            print("\n", end="")
+		if i == 0:
+			print("\n", end="")
 
-        # Try crack hash
+		# Try crack hash
 
-        try:
-            sp.check_call(
-                f"hashcat -a 0 -m {types[i]} {hash} {wordlist}",
-                shell="True",
-                stdout=sp.DEVNULL,
-                stderr=sp.STDOUT,
-            )
-        except sp.CalledProcessError:
-            if args.e:
-                get_width(f"[❌] Hashcat hash type invalid '{user_types[i]}'")
-                print(
-                    colored(
-                        f"[❌] Hashcat hash type invalid '{user_types[i]}'",
-                        "red",
-                        attrs=["bold"],
-                    ),
-                    end="\n",
-                )
-                continue
-        except OSError:
-            get_width(f"[❌] Hashcat not found on system")
-            print(
-                colored(f"[❌] Hashcat not found on system", "red", attrs=["bold"]),
-                end="\n",
-            )
-            return False
+		try:
+			sp.check_call(
+				f"hashcat -a 0 -m {types[i]} {hash} {wordlist}",
+				shell="True",
+				stdout=sp.DEVNULL,
+				stderr=sp.STDOUT,
+			)
+		except sp.CalledProcessError:
+			if args.e:
+				get_width(f"[❌] Hashcat hash type invalid '{user_types[i]}'")
+				print(
+					colored(
+						f"[❌] Hashcat hash type invalid '{user_types[i]}'",
+						"red",
+						attrs=["bold"],
+					),
+					end="\n",
+				)
+				continue
+		except OSError:
+			get_width(f"[❌] Hashcat not found on system")
+			print(
+				colored(f"[❌] Hashcat not found on system", "red", attrs=["bold"]),
+				end="\n",
+			)
+			return False
 
-        # Check if hash was cracked
+		# Check if hash was cracked
+	
+		try:
+			possible_output = str(
+				sp.check_output(
+					f"hashcat -a 0 -m {types[i]} {hash} {wordlist} --show", shell="True", stderr=sp.STDOUT
+				).strip()
+			).replace("'", "")
+		except:
+			get_width(f"[❌] Hashcat failed to crack '{user_types[i]}'")
+			print(
+				colored(
+					f"[❌] Hashcat failed to crack '{user_types[i]}'",
+					"red",
+					attrs=["bold"],
+				),
+				end="\n",
+			)
+			continue
 
-        possible_output = str(
-            sp.check_output(
-                f"hashcat -a 0 -m {types[i]} {hash} {wordlist} --show", shell="True"
-            ).strip()
-        ).replace("'", "")
+		if not "No hashes loaded." in possible_output:
+			get_width(
+				f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}"
+			)
+			print(
+				colored(
+					f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}",
+					"green",
+					attrs=["bold"],
+				),
+				end="",
+			)
+			if args.output:
+				with open(args.output, "a+") as results:
+					results.write(f"{hash}:{possible_output.split(':')[1]}\n")
+					results.close()
+			return True
+		pass
 
-        if not "No hashes loaded." in possible_output:
-            get_width(
-                f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}"
-            )
-            print(
-                colored(
-                    f"[✅] Hashcat | Type '{user_types[i]}' Plain found : {possible_output.split(':')[1]}",
-                    "green",
-                    attrs=["bold"],
-                ),
-                end="",
-            )
-            if args.output:
-                with open(args.output, "a+") as results:
-                    results.write(f"{hash}:{possible_output.split(':')[1]}\n")
-                    results.close()
-            return True
-        pass
-
-        # Go for another try
-
+		# Go for another try
 
 # Grab Hashs
 
@@ -407,8 +417,8 @@ def grab_hash():
 		return "".join(final_output.split()[0] + '"').split()
 
 	return args.hash.split()
-# Hash Identifyer
 
+# Hash Identifyer
 
 def identify_hash(hash, choice):
 
