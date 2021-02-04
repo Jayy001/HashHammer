@@ -10,6 +10,8 @@
 
 A hash cracking tool written in python, Can crack (most) hashs under ~3 seconds. Loosley based of HashBuster. 
 
+Outdated, trasnferring this tool to a new better one!
+
 # How do I install?
 
 For most ubuntu / Debian based operating systems, just run "make install" in the directory. To uninstall just run "make uninstall"
